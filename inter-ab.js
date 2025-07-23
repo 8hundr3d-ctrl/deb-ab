@@ -1,38 +1,44 @@
-// propellerads-script-2.js
-(function() {
-    // Configuration
+(function () {
     const config = {
         domain: 'groleegni.net',
         zoneId: 9612970,
         scriptPath: '/401/'
     };
 
-    function loadPropellerAdsScript() {
+    function loadInterstitial() {
         try {
-            // Create script element
             const script = document.createElement('script');
             script.src = `https://${config.domain}${config.scriptPath}${config.zoneId}`;
-            
-            // Try to append to body or document element
-            const target = document.body || document.documentElement;
-            if (target) {
-                target.appendChild(script);
+            script.setAttribute('data-cfasync', 'false');
+            script.async = true;
+
+            script.onload = function () {
+                console.log('Interstitial ad script loaded.');
+            };
+
+            script.onerror = function () {
+                console.error('Failed to load interstitial ad script.');
+            };
+
+            // Append when DOM is ready
+            const appendTarget = document.body || document.documentElement;
+            if (appendTarget) {
+                appendTarget.appendChild(script);
             } else {
-                // Fallback if DOM isn't ready
                 document.addEventListener('DOMContentLoaded', () => {
-                    (document.body || document.documentElement).appendChild(script);
+                    const fallbackTarget = document.body || document.documentElement;
+                    if (fallbackTarget) fallbackTarget.appendChild(script);
                 });
             }
-        } catch (error) {
-            console.error('Error loading PropellerAds script:', error);
+        } catch (err) {
+            console.error('Interstitial script initialization error:', err);
         }
     }
 
-    // Initialize
-    if (document.readyState === 'complete' || 
-        document.readyState === 'interactive') {
-        loadPropellerAdsScript();
+    // Load based on DOM state
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        loadInterstitial();
     } else {
-        window.addEventListener('DOMContentLoaded', loadPropellerAdsScript);
+        window.addEventListener('DOMContentLoaded', loadInterstitial);
     }
 })();
